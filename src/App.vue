@@ -48,7 +48,7 @@
       </template>
     </main>
     <footer class="app__footer">
-      v{{ version }} | made by <a href="https://mihau.co" target="_blank">mihau</a>
+      <a href="https://github.com/mihauco/lipicwiz" target="_blank">github</a> | v{{ version }} | made by <a href="https://mihau.co" target="_blank">mihau</a>
     </footer>
     <Loader v-if="showLoader"/>
   </div>
