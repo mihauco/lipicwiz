@@ -48,7 +48,7 @@
       </template>
     </main>
     <footer class="app__footer">
-      made by <a href="https://mihau.co" target="_blank">mihau</a>
+      v{{ version }} | made by <a href="https://mihau.co" target="_blank">mihau</a>
     </footer>
     <Loader v-if="showLoader"/>
   </div>
@@ -65,6 +65,7 @@ import Loader from './components/Loader.vue';
 import downloadImage from '@/helpers/downloadImage';
 import meta from '@/constants/meta';
 import dummyTexts from '@/constants/dummyTexts';
+import { version } from '../package.json';
 
 const initialData = dummyTexts[Math.round(Math.random() * (dummyTexts.length - 1))];
 
