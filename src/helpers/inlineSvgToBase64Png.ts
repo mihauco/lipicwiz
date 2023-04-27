@@ -11,9 +11,9 @@ const inlineSvgToBase64Png = (svg: SVGElement): Promise<string> => {
     const imgLoadHandler = () => {
       canvas.width = img.width;
       canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
 
       setTimeout(() => {
+        ctx.drawImage(img, 0, 0);
         resolve(canvas.toDataURL('image/png') as string);
         img.removeEventListener('load', imgLoadHandler);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
