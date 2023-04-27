@@ -50,6 +50,7 @@
     <footer class="app__footer">
       made by <a href="https://mihau.co" target="_blank">mihau</a>
     </footer>
+    <Loader v-if="showLoader"/>
   </div>
 </template>
 
@@ -60,6 +61,7 @@ import PicturePreview from '@/components/PicturePreview.vue';
 import TextInput from '@/components/TextInput.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import Button from '@/components/Button.vue';
+import Loader from './components/Loader.vue';
 import downloadImage from '@/helpers/downloadImage';
 import meta from '@/constants/meta';
 import dummyTexts from '@/constants/dummyTexts';
@@ -70,6 +72,7 @@ const uploadedImage = ref<null | string>(null);
 const text = ref(initialData.text);
 const textColor = ref(initialData.color);
 const backgroundColor = ref(initialData.background);
+const showLoader = ref(false);
 
 const picturePreview = ref<InstanceType<typeof PicturePreview> | null>(null);
 
@@ -88,7 +91,9 @@ const changeImage = () => {
 
 const download = async () => {
   if (picturePreview.value) {
+    showLoader.value = true;
     const base64Png = await picturePreview.value.getPngImage();
+    showLoader.value = false;
     downloadImage(`${(text.value || 'noname').toLocaleLowerCase()}.png`, base64Png);
   }
 }

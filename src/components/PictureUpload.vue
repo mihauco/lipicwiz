@@ -5,6 +5,7 @@
         class="picture-upload__input"
         type="file"
         ref="fileInput"
+        accept="image/png,image/jpg,image/jpeg"
         @change="changeHandler"
       >
       <span class="picture-upload__plus">+</span>
