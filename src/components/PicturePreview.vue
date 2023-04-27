@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, defineExpose, ref, computed, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import latoBase64CSS from '@/constants/latoBase64CSS';
 import inlineSvgToBase64Png from '@/helpers/inlineSvgToBase64Png';
 import getImageDimensionsFromBase64 from '@/helpers/getImageDimensionsFromBase64';
