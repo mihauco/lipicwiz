@@ -21,6 +21,7 @@
           class="app__picture-preview"
           :image="uploadedImage"
           :text="hashtag"
+          :zoom="zoom"
           :text-color="textColor"
           :background-color="backgroundColor"
         />
@@ -29,6 +30,11 @@
             class="app__text-input"
             v-model="text"
             label="Hashtag"
+          />
+          <Zoom
+            class="app__zoom"
+            v-model="zoom"
+            label="Zoom"
           />
           <ColorPicker
             class="app__color-picker app__color-picker--text-color"
@@ -59,6 +65,7 @@ import { ref, computed } from 'vue';
 import PictureUpload from '@/components/PictureUpload.vue';
 import PicturePreview from '@/components/PicturePreview.vue';
 import TextInput from '@/components/TextInput.vue';
+import Zoom from './components/Zoom.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import Button from '@/components/Button.vue';
 import Loader from './components/Loader.vue';
@@ -71,6 +78,7 @@ const initialData = dummyTexts[Math.round(Math.random() * (dummyTexts.length - 1
 
 const uploadedImage = ref<null | string>(null);
 const text = ref(initialData.text);
+const zoom = ref(0);
 const textColor = ref(initialData.color);
 const backgroundColor = ref(initialData.background);
 const showLoader = ref(false);
@@ -142,7 +150,8 @@ const download = async () => {
     flex-wrap: wrap;
   }
 
-  &__text-input {
+  &__text-input,
+  &__zoom {
     width: 100%;
     margin-bottom: 15px;
   }

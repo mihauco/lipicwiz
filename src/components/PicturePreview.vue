@@ -97,6 +97,7 @@ import { renderSize, previewSize } from '@/constants/imageSize';
 const props = defineProps<{
   image: string
   text: string
+  zoom: number
   textColor: string
   backgroundColor: string
 }>();
@@ -107,17 +108,62 @@ const imageSvgPosition = ref<{x: number, y: number}>({x: 0, y: 0});
 const isMouseDown = ref(false);
 const lastMousePosition = ref<{x: number, y: number}>({x: 0, y: 0});
 
+const imageHasSize = computed(() => {
+  return imageSize.value.width !== 0 && imageSize.value.height !== 0;
+})
+
+const imageShorterSize = computed<keyof typeof imageSize.value>(() => {
+  return imageSize.value.width < imageSize.value.height ? 'width' : 'height';
+});
+
+const minSvgImageWidth = computed(() => {
+  if (!imageHasSize.value) return imageSize.value.width;
+  if (imageShorterSize.value === 'width') return renderSize;
+
+  return imageSize.value.width * (renderSize / imageSize.value.height);
+})
+
+const maxSvgImageWidth = computed(() => {
+  if (!imageHasSize.value) return imageSize.value.width;
+
+  if (imageShorterSize.value === 'width') {
+    const deltaWidth = (renderSize + 100) - imageSize.value.width;
+    if (deltaWidth > 0) return imageSize.value.width + deltaWidth;
+    return imageSize.value.width;
+  }
+
+  const deltaHeight = (renderSize + 100) - imageSize.value.height;
+  const scale = (imageSize.value.height + (deltaHeight > 0 ? deltaHeight : 0)) / imageSize.value.height;
+
+  return imageSize.value.width * scale;
+});
+
+const minSvgImageHeight = computed(() => {
+  if (!imageHasSize.value) return imageSize.value.height;
+  if (imageShorterSize.value === 'height') return renderSize;
+
+  return imageSize.value.height * (renderSize / imageSize.value.width);
+});
+
+const maxSvgImageHeight = computed(() => {
+  if (!imageHasSize.value) return imageSize.value.height;
+
+  if (imageShorterSize.value === 'height') {
+    const deltaHeight = (renderSize + 100) - imageSize.value.height;
+    if (deltaHeight > 0) return imageSize.value.height + deltaHeight;
+    return imageSize.value.height;
+  }
+
+  const deltaWidth = (renderSize + 100) - imageSize.value.width;
+  const scale = (imageSize.value.width + (deltaWidth > 0 ? deltaWidth : 0)) / imageSize.value.width;
+
+  return imageSize.value.height * scale;
+});
+
 const imageSvgSize = computed(() => {
-  if (imageSize.value.width === 0 || imageSize.value.height === 0) return imageSize.value;
-
-  const shorterSide: keyof typeof imageSize.value = imageSize.value.width < imageSize.value.height 
-    ? 'width' : 'height';
-  
-  const scale = (renderSize / imageSize.value[shorterSide]);
-
   return {
-    width: shorterSide === 'width' ? renderSize : imageSize.value.width * scale,
-    height: shorterSide === 'height' ? renderSize : imageSize.value.height * scale
+    width: minSvgImageWidth.value + (maxSvgImageWidth.value - minSvgImageWidth.value) * (props.zoom / 100),
+    height: minSvgImageHeight.value + (maxSvgImageHeight.value - minSvgImageHeight.value) * (props.zoom / 100),
   };
 });
 
@@ -186,10 +232,27 @@ const bodyMouseMoveHandler = (event: MouseEvent) => {
   }
 }
 
-watch(() => imageSvgSize.value, (newSize) => {
-  imageSvgPosition.value = {
-    x: (renderSize - newSize.width) / 2,
-    y: (renderSize - newSize.height) / 2,
+watch(() => imageSvgSize.value, (newSize, prevSize) => {
+  if (!prevSize.width && !prevSize.height) {
+    imageSvgPosition.value = {
+      x: (renderSize - newSize.width) / 2,
+      y: (renderSize - newSize.height) / 2,
+    }
+  } else {
+    const newXPos = imageSvgPosition.value.x - ((newSize.width - prevSize.width) / 2);
+    const newYPos = imageSvgPosition.value.y - ((newSize.height - prevSize.height) / 2);
+
+    const maxX = imageSvgSize.value.width - renderSize;
+    const maxY = imageSvgSize.value.height - renderSize;
+
+    imageSvgPosition.value = {
+      x: newXPos > 0
+        ? 0
+        : newXPos > -maxX ? newXPos : -maxX,
+      y: newYPos > 0
+        ? 0
+        : newYPos > -maxY ? newYPos : -maxY,
+    };
   }
 });
 
